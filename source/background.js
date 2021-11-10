@@ -122,6 +122,17 @@ function init() {
 	browser.alarms.onAlarm.addListener(update);
 	scheduleNextAlarm();
 
+	chrome.browserAction.onClicked.addListener(async function(tab) {
+		const badge = await browser.browserAction.getBadgeText({});
+
+		if (badge !== '' && badge !== '?') {
+			await handleBrowserActionClick();
+		} else {
+			alert("Call update.");
+			update();
+		}
+	});
+
 	browser.runtime.onMessage.addListener(onMessage);
 	browser.runtime.onInstalled.addListener(handleInstalled);
 
@@ -129,8 +140,6 @@ function init() {
 	if (isChrome()) {
 		browser.permissions.onAdded.addListener(addHandlers);
 	}
-
-	browser.browserAction.onClicked.addListener(handleBrowserActionClick);
 
 	addHandlers();
 	update();
